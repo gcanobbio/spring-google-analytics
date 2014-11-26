@@ -162,14 +162,14 @@ public final class AuthHelper {
 	}
 
 	/**
-	 * Retrieves event of an api from user's google Analytics account.
+	 * Retrieves event of a label from user's google Analytics account.
 	 * 
 	 * @param trackingID : String
-	 * @param apiName : String
+	 * @param label : String
 	 * @return instance of {@link GaData}
 	 * @throws IOException
 	 */
-	public GaData executeDataQueryEvent(String trackingID, String apiName)
+	public GaData executeDataQueryEvent(String trackingID, String label)
 			throws IOException {
 		
 		//profile id from tracking ID
@@ -199,7 +199,7 @@ public final class AuthHelper {
 					// Metrics.
 					.setDimensions("ga:eventLabel,ga:eventAction")
 					.setSort("-ga:eventLabel")
-					.setFilters("ga:eventLabel contains '" + apiName + "'")
+					.setFilters("ga:eventLabel contains '" + label + "'")
 					.setMaxResults(150).execute();
 			
 			printGaData(dataEvent);
@@ -210,14 +210,14 @@ public final class AuthHelper {
 	}
 	
 	/**
-	 * Retrieves exception of an api from user's google Analytics account.
+	 * Retrieves exception of a description from user's google Analytics account.
 	 * 
 	 * @param trackingID : String
-	 * @param apiName : String
+	 * @param description : String
 	 * @return instance of {@link GaData}
 	 * @throws IOException
 	 */
-	public GaData executeDataQueryException(String trackingID, String apiName)
+	public GaData executeDataQueryException(String trackingID, String description)
 			throws IOException {
 		
 		//profile id from tracking ID
@@ -246,7 +246,7 @@ public final class AuthHelper {
 					// Metrics.
 					.setDimensions("ga:exceptionDescription")
 					.setSort("-ga:exceptionDescription")
-					.setFilters("ga:exceptionDescription contains '" + apiName + "'")
+					.setFilters("ga:exceptionDescription contains '" + description + "'")
 					.setMaxResults(150).execute();
 			printGaData(dataExc);
 			
