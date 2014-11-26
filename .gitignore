@@ -8,6 +8,6 @@
 /src/main/resources/META-INF
 /src/main/resources/log4j.xml
 /src/main/webapp/WEB-INF/classes
-/src/test/resources/log4j.xml
+/src/test/resources
 /.springBeans
 /.externalToolBuilders
