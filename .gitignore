@@ -1,0 +1,13 @@
+/target
+/.settings
+/.classpath
+/.project
+/bin
+/home
+/LICENSE-2.0.html
+/src/main/resources/META-INF
+/src/main/resources/log4j.xml
+/src/main/webapp/WEB-INF/classes
+/src/test/resources/log4j.xml
+/.springBeans
+/.externalToolBuilders
