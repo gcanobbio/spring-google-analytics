@@ -138,7 +138,16 @@ public class GoogleController {
 		return "redirect:/";
 	}
 	
-	@RequestMapping(value = "/event", method = RequestMethod.GET, produces = "application/json")
+	/**
+	 * Retrieves google analytics event data from user's account and searching
+	 * by label.
+	 * 
+	 * @param label : String
+	 * @param trackingID : String
+	 * @param request : instance of {@link HttpServletRequest}
+	 * @return instance of {@link GaData}
+	 */
+	@RequestMapping(value = "/event/{label}/{trackingID}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public GaData googleEvent(@PathVariable String label, @PathVariable String trackingID,
 			HttpServletRequest request){
@@ -158,7 +167,16 @@ public class GoogleController {
 			return null;
 	}
 	
-	@RequestMapping(value = "/exception", method = RequestMethod.GET, 
+	/**
+	 * Retrieves google analytics exception data from user's account and searching
+	 * by description.
+	 * 
+	 * @param description : String
+	 * @param trackingID : String
+	 * @param request : instance of {@link HttpServletRequest}
+	 * @return instance of {@link GaData}
+	 */
+	@RequestMapping(value = "/exception/{description}/{trackingID}", method = RequestMethod.GET, 
 			produces = "application/json")
 	@ResponseBody
 	public GaData googleException(@PathVariable String description, @PathVariable String trackingID,
