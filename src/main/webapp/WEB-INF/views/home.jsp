@@ -50,7 +50,7 @@ If you want to try Google Analytics, use the following rest services:
 					<b>AuthHelper</b> <br/>
 					a service, added in servlet-context spring configuration file.
 					<br/>
-					This class starts oauth 2.0 flow to connect with google and retrieves permissions
+					This class starts OAuth 2.0 flow to connect with google and retrieves permissions
 					to access google analytics user's account.
 				</li>
 				
