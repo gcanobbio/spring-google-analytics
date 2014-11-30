@@ -138,35 +138,45 @@ public class GoogleController {
 		return "redirect:/";
 	}
 	
-	//TODO Rest that retrieves gaData
-	
 	@RequestMapping(value = "/event", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public GaData googleEvent(@PathVariable String label, @PathVariable String trackingID){
+	public GaData googleEvent(@PathVariable String label, @PathVariable String trackingID,
+			HttpServletRequest request){
 		logger.info("Retrieve event from ga account.");
-		try {
-			GaData event = auth.executeDataQueryEvent(trackingID, label);
-			return event;
-			
-		}catch (IOException e) {
+		
+		if (request.getSession().getAttribute("state") != null) {
+			try {
+				String profileID = auth.getProfileId(trackingID);
+				GaData event = auth.executeDataQueryEvent(profileID, label);
+				return event;
+
+			} catch (IOException e) {
+				return null;
+
+			}
+		} else
 			return null;
-			
-		}
 	}
 	
 	@RequestMapping(value = "/exception", method = RequestMethod.GET, 
 			produces = "application/json")
 	@ResponseBody
-	public GaData googleException(@PathVariable String description, @PathVariable String trackingID){
+	public GaData googleException(@PathVariable String description, @PathVariable String trackingID,
+			HttpServletRequest request){
 		logger.info("Retrieve exception from ga account.");
-		try {
-			GaData event = auth.executeDataQueryException(trackingID, description);
-			return event;
-			
-		}catch (IOException e) {
+		if (request.getSession().getAttribute("state") != null) {
+			try {
+				String profileID = auth.getProfileId(trackingID);
+				GaData event = auth.executeDataQueryException(profileID,
+						description);
+				return event;
+
+			} catch (IOException e) {
+				return null;
+
+			}
+		} else
 			return null;
-			
-		}
 	}
 	
 }

@@ -32,7 +32,10 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.analytics.Analytics;
+import com.google.api.services.analytics.model.Accounts;
 import com.google.api.services.analytics.model.GaData;
+import com.google.api.services.analytics.model.Profiles;
+import com.google.api.services.analytics.model.Webproperties;
 import com.google.api.services.analytics.model.GaData.ColumnHeaders;
 
 import java.io.IOException;
@@ -69,7 +72,7 @@ public final class AuthHelper {
 	//First: write access to the Analytics API
 	//Second: view and manage user permissions for Analytics accounts
 	private static final Iterable<String> SCOPE = Arrays
-			.asList("https://www.googleapis.com/auth/analytics;https://www.googleapis.com/auth/analytics.manage.users"
+			.asList("https://www.googleapis.com/auth/analytics;https://www.googleapis.com/auth/analytics.manage.users;https://www.googleapis.com/auth/userinfo.email;https://www.googleapis.com/auth/analytics.readonly"
 					.split(";"));
 	
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -160,20 +163,104 @@ public final class AuthHelper {
 		        APPLICATION_NAME).build();
 
 	}
+	
+	/**
+	 * Retrieve profile id by user's tracking id.
+	 * 
+	 * @param trackingID : String
+	 * @return profile id
+	 * @throws IOException
+	 */
+	public String getProfileId(String trackingID) throws IOException {
+		// profile id from tracking ID
+		String[] s = trackingID.split("-");// tracking ID: UA-XXXXXX-YY where
+		// XXXXXX is account ID
+		String myaccountId = s[1];
+
+		String profileId = null;
+
+		// Query accounts collection
+		Accounts accounts = analytics.management().accounts().list().execute();
+
+		String accountId = null;
+		if (accounts.getItems().isEmpty()) {
+			System.err.println("No accounts found");
+		} else {
+			System.out.println("Account list not empty.");
+			if(accounts.getItems().get(0).getId().equalsIgnoreCase(myaccountId)){
+				accountId = accounts.getItems().get(0).getId();
+				System.out.println("Account id if: "+accountId);
+			}
+			else{
+				//account ID
+				for (int i = 0; i < accounts.getItems().size(); i++) {
+					if (accounts.getItems().get(i).getId().equalsIgnoreCase(myaccountId)) {
+						accountId = accounts.getItems().get(i).getId();
+						System.out.println("Account id for: "+accountId);
+					}
+				}
+			}
+		}
+		
+		//Web properties
+		String webpropertyId = null;
+		if(accountId!=null){
+			// Query webproperties collection.
+			Webproperties webproperties = analytics.management()
+					.webproperties().list(accountId).execute();
+
+			if (webproperties.getItems().isEmpty()) {
+				System.err.println("No Webproperties found");
+			} else {
+				System.out.println("Webproperties found");
+				if(webproperties.getItems().get(0).getId().equalsIgnoreCase(trackingID)){
+					webpropertyId = webproperties.getItems().get(0).getId();
+					System.out.println("Webproperties id if: "+webpropertyId);
+				}
+				else{
+					//account ID
+					for (int i = 0; i < webproperties.getItems().size(); i++) {
+						if (webproperties.getItems().get(i).getId().equalsIgnoreCase(trackingID)) {
+							webpropertyId = webproperties.getItems().get(i).getId();
+							System.out.println("Webproperties id for: "+webpropertyId);
+						}
+					}
+				}
+			}
+			
+		}
+		
+		//ProfileID
+		if(webpropertyId!=null){
+			
+			// Query profiles collection.
+			Profiles profiles = analytics.management().profiles().list(accountId, webpropertyId)
+					.execute();
+
+			if (profiles.getItems().isEmpty()) {
+				System.err.println("No profiles found");
+			} else {
+				System.out.println("Profiles found");
+				profileId = profiles.getItems().get(0).getId();
+			}
+		}
+		System.out.println("Profile id: "+profileId);
+		return profileId;
+	}
 
 	/**
 	 * Retrieves event of a label from user's google Analytics account.
 	 * 
-	 * @param trackingID : String
+	 * @param profileID : String
 	 * @param label : String
 	 * @return instance of {@link GaData}
 	 * @throws IOException
 	 */
-	public GaData executeDataQueryEvent(String trackingID, String label)
+	public GaData executeDataQueryEvent(String profileID, String label)
 			throws IOException {
 		
 		//profile id from tracking ID
-		String[] s = trackingID.split("-");//tracking ID: UA-XXXXXX-YY where XXXXXX is profile ID
+		String[] s = profileID.split("-");//tracking ID: UA-XXXXXX-YY where XXXXXX is profile ID
 		String profileId = s[1];
 		
 		// Today date
@@ -187,7 +274,6 @@ public final class AuthHelper {
 		Date beforeToday = cal.getTime();
 		String before = format.format(beforeToday);
 		
-		//TODO
 		if (analytics != null) {
 
 			GaData dataEvent = analytics.data()
@@ -199,7 +285,7 @@ public final class AuthHelper {
 					// Metrics.
 					.setDimensions("ga:eventLabel,ga:eventAction")
 					.setSort("-ga:eventLabel")
-					.setFilters("ga:eventLabel contains '" + label + "'")
+					.setFilters("ga:eventLabel=~^" + label + ".*")//start with label characters
 					.setMaxResults(150).execute();
 			
 			printGaData(dataEvent);
@@ -212,16 +298,16 @@ public final class AuthHelper {
 	/**
 	 * Retrieves exception of a description from user's google Analytics account.
 	 * 
-	 * @param trackingID : String
+	 * @param profileID : String
 	 * @param description : String
 	 * @return instance of {@link GaData}
 	 * @throws IOException
 	 */
-	public GaData executeDataQueryException(String trackingID, String description)
+	public GaData executeDataQueryException(String profileID, String description)
 			throws IOException {
 		
 		//profile id from tracking ID
-		String[] s = trackingID.split("-");//tracking ID: UA-XXXXXX-YY where XXXXXX is profile ID
+		String[] s = profileID.split("-");//tracking ID: UA-XXXXXX-YY where XXXXXX is profile ID
 		String profileId = s[1];
 				
 		//Today date
@@ -235,7 +321,6 @@ public final class AuthHelper {
 		Date beforeToday = cal.getTime();
 		String before = format.format(beforeToday);
 		
-		// TODO
 		if (analytics != null) {
 			GaData dataExc = analytics.data()
 					.ga()
@@ -246,7 +331,7 @@ public final class AuthHelper {
 					// Metrics.
 					.setDimensions("ga:exceptionDescription")
 					.setSort("-ga:exceptionDescription")
-					.setFilters("ga:exceptionDescription contains '" + description + "'")
+					.setFilters("ga:exceptionDescription=~^" + description + ".*")//start with descr.
 					.setMaxResults(150).execute();
 			printGaData(dataExc);
 			
