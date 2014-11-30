@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.gc.googleAnalytics.AuthHelper;
+import org.gc.googleAnalytics.TrackingIDValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,7 +154,11 @@ public class GoogleController {
 			HttpServletRequest request){
 		logger.info("Retrieve event from ga account.");
 		
-		if (request.getSession().getAttribute("state") != null) {
+		//validate trackingID
+		TrackingIDValidator validator = new TrackingIDValidator();
+		//if user is logged in with google
+		if (request.getSession().getAttribute("state") != null &&
+				validator.validate(trackingID)) {
 			try {
 				String profileID = auth.getProfileId(trackingID);
 				GaData event = auth.executeDataQueryEvent(profileID, label);
@@ -182,7 +187,12 @@ public class GoogleController {
 	public GaData googleException(@PathVariable String description, @PathVariable String trackingID,
 			HttpServletRequest request){
 		logger.info("Retrieve exception from ga account.");
-		if (request.getSession().getAttribute("state") != null) {
+		
+		//validate tracking ID
+		TrackingIDValidator validator = new TrackingIDValidator();
+		//if user is logged in with google
+		if (request.getSession().getAttribute("state") != null &&
+				validator.validate(trackingID)) {
 			try {
 				String profileID = auth.getProfileId(trackingID);
 				GaData event = auth.executeDataQueryException(profileID,
