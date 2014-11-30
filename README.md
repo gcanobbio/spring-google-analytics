@@ -16,6 +16,9 @@ In package org.gc.googleAnalytics there are classes that post data to Google Ana
 In package org.gc there are two controllers: home (retrieve jsp) and google controller.
 The latter is for google oauth authentication and for filters GaData.
 
+You must register this application in google console, adding callback url (see Google Controller for callback service).
+After retrieving client id and client secret, you can add them in the properties file in src/main/resources.
+
 Libraries
 =======================
 
@@ -47,6 +50,9 @@ Libraries
 
 Reference
 =======================
+
+For registering an app in Google Developer Console and for getting OAuth 2.0 Client id, see https://developers.google.com/console/help/new/#generatingoauth2
+
 The library and some sample on how to connect with Google Products such as Google Analytics can be found at https://code.google.com/p/google-api-java-client/wiki/Setup
 
 Measurement Protocol is needed to POST data in users' google analytics account, documentation can be found at https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
