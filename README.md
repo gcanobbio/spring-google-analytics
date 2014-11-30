@@ -18,6 +18,8 @@ The latter is for google oauth authentication and for filters GaData.
 
 Libraries
 =======================
+
+```
 <dependency>
 	<groupId>com.google.apis</groupId>
 	<artifactId>google-api-services-analytics</artifactId>
@@ -41,6 +43,7 @@ Libraries
 	<artifactId>google-api-services-oauth2</artifactId>
 	<version>v2-rev70-1.17.0-rc</version>
 </dependency>
+```
 
 Reference
 =======================
