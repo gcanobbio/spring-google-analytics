@@ -36,7 +36,9 @@ If you want to try Google Analytics, use the following rest services:
 	<div>
 		You must register this application in google console, adding callback url 
 		(yourdomain//api/oauth/google/callback). <br/>
-		After retrieving client id and client secret,
+		After retrieving client id and client secret (
+		<a href="https://developers.google.com/console/help/new/#generatingoauth2">
+			see documentation</a>),
 		you can complete value.properties in src/main/resources.
 	</div>
 	
